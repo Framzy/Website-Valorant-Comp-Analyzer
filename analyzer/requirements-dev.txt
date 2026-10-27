@@ -1,0 +1,5 @@
+# Test-only dependencies (installed only when the image is built with
+# --build-arg INSTALL_TESTS=1).
+-r requirements.txt
+pytest==8.3.4
+httpx==0.27.2

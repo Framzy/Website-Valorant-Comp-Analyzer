@@ -1,0 +1,13 @@
+# Runtime dependencies for the analyzer sidecar.
+# ML pins are copied from the legacy Flask backend (production/backend/requirements.txt)
+# so the pickled Team V2 artifacts load/recompute exactly as they do in production.
+fastapi==0.115.6
+uvicorn==0.32.1
+pydantic==2.10.4
+
+numpy==1.24.0
+pandas==2.1.0
+scikit-learn==1.3.0
+scipy==1.15.3
+xgboost==3.0.2
+joblib==1.3.0

@@ -1,0 +1,124 @@
+@import "tailwindcss";
+
+@theme {
+  --font-heading: var(--font-rajdhani), "Rajdhani", ui-sans-serif, system-ui, sans-serif;
+  --font-body: var(--font-inter), "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --color-brand: #ff4655;
+  --color-brand-dark: #c0192a;
+  --color-brand-light: #ff6b76;
+
+  --color-deep: #0d1b26;
+  --color-main: #111f2d;
+  --color-card: #162432;
+  --color-card-dark: #0a161f;
+
+  --color-ink: #e8edf2;
+  --color-muted: #8fa3b3;
+  --color-subtle: #4d6070;
+  --color-line: rgba(255, 255, 255, 0.08);
+  --color-line-strong: rgba(255, 255, 255, 0.15);
+
+  --color-playstyle-standard: #ffd36e;
+  --color-playstyle-control: #75d8ff;
+  --color-playstyle-aggressive: #ff7180;
+  --color-playstyle-utility: #b99cff;
+  --color-playstyle-unclassified: #b7bec8;
+
+  --color-conclusion-potential: #61d095;
+  --color-conclusion-stable: #ffd36e;
+  --color-conclusion-risky: #f04254;
+
+  --color-role-d: #ff8b9b;
+  --color-role-i: #8de0b0;
+  --color-role-c: #aeb4ff;
+  --color-role-s: #f2d37b;
+
+  --radius-card: 1rem;
+  --radius-panel: 1.25rem;
+
+  --shadow-card: 0 12px 28px rgba(0, 0, 0, 0.5);
+  --shadow-container: 0 24px 80px rgba(0, 0, 0, 0.6);
+  --shadow-brand: 0 0 30px rgba(255, 70, 85, 0.4);
+
+  --breakpoint-xs: 30rem;
+  --breakpoint-sm: 48rem;
+  --breakpoint-md: 56.25rem;
+  --breakpoint-lg: 75rem;
+
+  --animate-reveal: reveal 0.45s ease-out both;
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@layer base {
+  :root {
+    color-scheme: dark;
+  }
+
+  html,
+  body {
+    min-height: 100%;
+  }
+
+  body {
+    background-color: var(--color-deep);
+    background-image:
+      radial-gradient(circle at 50% -10%, rgba(255, 70, 85, 0.12), transparent 55%),
+      radial-gradient(circle at 0% 100%, rgba(21, 50, 70, 0.5), transparent 45%);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-heading);
+    letter-spacing: 0.02em;
+  }
+
+  ::selection {
+    background: rgba(255, 70, 85, 0.35);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 2px;
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: rgba(255, 70, 85, 0.4);
+    border-radius: 999px;
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .bg-panel-gradient {
+    background-image: linear-gradient(150deg, #0f1e2b 0%, #162432 100%);
+  }
+
+  .bg-header-gradient {
+    background-image: linear-gradient(150deg, #0a161f 0%, #0f1e2b 100%);
+  }
+}

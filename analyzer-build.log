@@ -1,0 +1,155 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 1.12kB done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/library/python:3.11-slim
+#2 DONE 4.6s
+
+#3 [1/9] FROM docker.io/library/python:3.11-slim@sha256:b7a9e5f6a93d6d4a31f129bbd4bdee69efccb6ded0fb230d78aafaf37af98377
+#3 resolve docker.io/library/python:3.11-slim@sha256:b7a9e5f6a93d6d4a31f129bbd4bdee69efccb6ded0fb230d78aafaf37af98377 0.0s done
+#3 sha256:b0aec4a98ced1e92f1d50c37aa89c78d60e3dc6a52d61f8134afda24b185ad06 249B / 249B 0.3s done
+#3 sha256:90d47cf54851a8d83f33db71f0025a8ba367c12fb24817259dd9736098cb305b 1.29MB / 1.29MB 7.5s done
+#3 sha256:6d9af71a343efe2a00fdfc9507db3bdf3530bf3f8cf2975eb1be235a7eb70128 14.46MB / 14.46MB 13.7s done
+#3 extracting sha256:90d47cf54851a8d83f33db71f0025a8ba367c12fb24817259dd9736098cb305b 1.6s done
+#3 extracting sha256:6d9af71a343efe2a00fdfc9507db3bdf3530bf3f8cf2975eb1be235a7eb70128 1.0s done
+#3 extracting sha256:b0aec4a98ced1e92f1d50c37aa89c78d60e3dc6a52d61f8134afda24b185ad06 0.5s done
+#3 DONE 15.6s
+
+#4 [2/9] WORKDIR /srv/analyzer
+#4 DONE 5.1s
+
+#5 [internal] load .dockerignore
+#5 transferring context: 164B done
+#5 DONE 0.0s
+
+#6 [internal] load build context
+#6 transferring context: 989.37kB 0.1s done
+#6 DONE 0.1s
+
+#7 [3/9] COPY requirements.txt requirements-dev.txt ./
+#7 DONE 0.3s
+
+#8 [4/9] RUN pip install --no-cache-dir -r requirements.txt     && if [ "0" = "1" ]; then pip install --no-cache-dir -r requirements-dev.txt; fi
+#8 2.149 Collecting fastapi==0.115.6 (from -r requirements.txt (line 4))
+#8 2.460   Downloading fastapi-0.115.6-py3-none-any.whl.metadata (27 kB)
+#8 2.581 Collecting uvicorn==0.32.1 (from -r requirements.txt (line 5))
+#8 2.638   Downloading uvicorn-0.32.1-py3-none-any.whl.metadata (6.6 kB)
+#8 2.887 Collecting pydantic==2.10.4 (from -r requirements.txt (line 6))
+#8 2.944   Downloading pydantic-2.10.4-py3-none-any.whl.metadata (29 kB)
+#8 3.398 Collecting numpy==1.24.0 (from -r requirements.txt (line 8))
+#8 3.449   Downloading numpy-1.24.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (5.6 kB)
+#8 3.738 Collecting pandas==2.1.0 (from -r requirements.txt (line 9))
+#8 3.817   Downloading pandas-2.1.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (18 kB)
+#8 4.158 Collecting scikit-learn==1.3.0 (from -r requirements.txt (line 10))
+#8 4.205   Downloading scikit_learn-1.3.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (11 kB)
+#8 4.562 Collecting scipy==1.15.3 (from -r requirements.txt (line 11))
+#8 4.619   Downloading scipy-1.15.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (61 kB)
+#8 4.717      ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 62.0/62.0 kB 598.8 kB/s eta 0:00:00
+#8 4.896 Collecting xgboost==3.0.2 (from -r requirements.txt (line 12))
+#8 4.978   Downloading xgboost-3.0.2-py3-none-manylinux_2_28_x86_64.whl.metadata (2.1 kB)
+#8 5.126 Collecting joblib==1.3.0 (from -r requirements.txt (line 13))
+#8 5.172   Downloading joblib-1.3.0-py3-none-any.whl.metadata (5.4 kB)
+#8 5.296 Collecting starlette<0.42.0,>=0.40.0 (from fastapi==0.115.6->-r requirements.txt (line 4))
+#8 5.387   Downloading starlette-0.41.3-py3-none-any.whl.metadata (6.0 kB)
+#8 5.529 Collecting typing-extensions>=4.8.0 (from fastapi==0.115.6->-r requirements.txt (line 4))
+#8 5.579   Downloading typing_extensions-4.16.0-py3-none-any.whl.metadata (3.3 kB)
+#8 5.688 Collecting click>=7.0 (from uvicorn==0.32.1->-r requirements.txt (line 5))
+#8 5.740   Downloading click-8.5.0-py3-none-any.whl.metadata (2.6 kB)
+#8 5.801 Collecting h11>=0.8 (from uvicorn==0.32.1->-r requirements.txt (line 5))
+#8 5.874   Downloading h11-0.16.0-py3-none-any.whl.metadata (8.3 kB)
+#8 5.937 Collecting annotated-types>=0.6.0 (from pydantic==2.10.4->-r requirements.txt (line 6))
+#8 6.025   Downloading annotated_types-0.8.0-py3-none-any.whl.metadata (15 kB)
+#8 7.598 Collecting pydantic-core==2.27.2 (from pydantic==2.10.4->-r requirements.txt (line 6))
+#8 7.642   Downloading pydantic_core-2.27.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl.metadata (6.6 kB)
+#8 7.823 Collecting python-dateutil>=2.8.2 (from pandas==2.1.0->-r requirements.txt (line 9))
+#8 7.868   Downloading python_dateutil-3.0.0-py2.py3-none-any.whl.metadata (8.2 kB)
+#8 7.989 Collecting pytz>=2020.1 (from pandas==2.1.0->-r requirements.txt (line 9))
+#8 8.040   Downloading pytz-2026.5-py2.py3-none-any.whl.metadata (22 kB)
+#8 8.118 Collecting tzdata>=2022.1 (from pandas==2.1.0->-r requirements.txt (line 9))
+#8 8.171   Downloading tzdata-2026.5-py2.py3-none-any.whl.metadata (1.4 kB)
+#8 8.260 Collecting threadpoolctl>=2.0.0 (from scikit-learn==1.3.0->-r requirements.txt (line 10))
+#8 8.315   Downloading threadpoolctl-3.7.0-py3-none-any.whl.metadata (24 kB)
+#8 8.430 Collecting nvidia-nccl-cu12 (from xgboost==3.0.2->-r requirements.txt (line 12))
+#8 8.481   Downloading nvidia_nccl_cu12-2.32.3-py3-none-manylinux_2_27_x86_64.whl.metadata (2.1 kB)
+#8 8.554 Collecting six>=1.6 (from python-dateutil>=2.8.2->pandas==2.1.0->-r requirements.txt (line 9))
+#8 8.603   Downloading six-1.17.0-py2.py3-none-any.whl.metadata (1.7 kB)
+#8 8.701 Collecting anyio<5,>=3.4.0 (from starlette<0.42.0,>=0.40.0->fastapi==0.115.6->-r requirements.txt (line 4))
+#8 8.757   Downloading anyio-4.15.1-py3-none-any.whl.metadata (4.7 kB)
+#8 8.845 Collecting idna>=2.8 (from anyio<5,>=3.4.0->starlette<0.42.0,>=0.40.0->fastapi==0.115.6->-r requirements.txt (line 4))
+#8 8.916   Downloading idna-3.20-py3-none-any.whl.metadata (7.2 kB)
+#8 8.986 Downloading fastapi-0.115.6-py3-none-any.whl (94 kB)
+#8 9.057    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 94.8/94.8 kB 1.4 MB/s eta 0:00:00
+#8 9.138 Downloading uvicorn-0.32.1-py3-none-any.whl (63 kB)
+#8 9.180    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 63.8/63.8 kB 1.8 MB/s eta 0:00:00
+#8 9.287 Downloading pydantic-2.10.4-py3-none-any.whl (431 kB)
+#8 9.493    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 431.8/431.8 kB 2.1 MB/s eta 0:00:00
+#8 9.555 Downloading numpy-1.24.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (17.3 MB)
+#8 17.35    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 17.3/17.3 MB 2.2 MB/s eta 0:00:00
+#8 17.41 Downloading pandas-2.1.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (12.6 MB)
+#8 26.22    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 12.6/12.6 MB 1.4 MB/s eta 0:00:00
+#8 26.28 Downloading scikit_learn-1.3.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (10.9 MB)
+#8 33.11    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 10.9/10.9 MB 1.6 MB/s eta 0:00:00
+#8 33.44 Downloading scipy-1.15.3-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (37.7 MB)
+#8 54.43    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 37.7/37.7 MB 1.8 MB/s eta 0:00:00
+#8 54.49 Downloading xgboost-3.0.2-py3-none-manylinux_2_28_x86_64.whl (253.9 MB)
+#8 260.4    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 253.9/253.9 MB 1.6 MB/s eta 0:00:00
+#8 260.5 Downloading joblib-1.3.0-py3-none-any.whl (301 kB)
+#8 260.9    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 301.9/301.9 kB 724.1 kB/s eta 0:00:00
+#8 261.2 Downloading pydantic_core-2.27.2-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl (2.0 MB)
+#8 262.5    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 1.5 MB/s eta 0:00:00
+#8 262.6 Downloading annotated_types-0.8.0-py3-none-any.whl (13 kB)
+#8 262.6 Downloading click-8.5.0-py3-none-any.whl (125 kB)
+#8 262.8    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 125.3/125.3 kB 1.2 MB/s eta 0:00:00
+#8 262.8 Downloading h11-0.16.0-py3-none-any.whl (37 kB)
+#8 262.9 Downloading python_dateutil-3.0.0-py2.py3-none-any.whl (94 kB)
+#8 263.0    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 94.7/94.7 kB 1.9 MB/s eta 0:00:00
+#8 263.0 Downloading pytz-2026.5-py2.py3-none-any.whl (506 kB)
+#8 263.5    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 506.3/506.3 kB 1.2 MB/s eta 0:00:00
+#8 263.5 Downloading starlette-0.41.3-py3-none-any.whl (73 kB)
+#8 263.6    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 73.2/73.2 kB 698.9 kB/s eta 0:00:00
+#8 263.7 Downloading threadpoolctl-3.7.0-py3-none-any.whl (26 kB)
+#8 263.8 Downloading typing_extensions-4.16.0-py3-none-any.whl (45 kB)
+#8 263.8    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 45.6/45.6 kB 907.6 kB/s eta 0:00:00
+#8 263.9 Downloading tzdata-2026.5-py2.py3-none-any.whl (347 kB)
+#8 264.2    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 348.0/348.0 kB 1.1 MB/s eta 0:00:00
+#8 264.3 Downloading nvidia_nccl_cu12-2.32.3-py3-none-manylinux_2_27_x86_64.whl (351.5 MB)
+#8 661.9    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 351.5/351.5 MB 1.2 MB/s eta 0:00:00
+#8 662.0 Downloading anyio-4.15.1-py3-none-any.whl (132 kB)
+#8 662.1    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 132.1/132.1 kB 1.2 MB/s eta 0:00:00
+#8 662.2 Downloading six-1.17.0-py2.py3-none-any.whl (11 kB)
+#8 662.2 Downloading idna-3.20-py3-none-any.whl (69 kB)
+#8 662.3    ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 69.6/69.6 kB 1.3 MB/s eta 0:00:00
+#8 663.1 Installing collected packages: pytz, tzdata, typing-extensions, threadpoolctl, six, nvidia-nccl-cu12, numpy, joblib, idna, h11, click, annotated-types, uvicorn, scipy, python-dateutil, pydantic-core, anyio, xgboost, starlette, scikit-learn, pydantic, pandas, fastapi
+#8 711.5 Successfully installed annotated-types-0.8.0 anyio-4.15.1 click-8.5.0 fastapi-0.115.6 h11-0.16.0 idna-3.20 joblib-1.3.0 numpy-1.24.0 nvidia-nccl-cu12-2.32.3 pandas-2.1.0 pydantic-2.10.4 pydantic-core-2.27.2 python-dateutil-3.0.0 pytz-2026.5 scikit-learn-1.3.0 scipy-1.15.3 six-1.17.0 starlette-0.41.3 threadpoolctl-3.7.0 typing-extensions-4.16.0 tzdata-2026.5 uvicorn-0.32.1 xgboost-3.0.2
+#8 711.5 WARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+#8 DONE 739.2s
+
+#9 [5/9] COPY app ./app
+#9 DONE 3.6s
+
+#10 [6/9] COPY data ./data
+#10 DONE 1.2s
+
+#11 [7/9] COPY artifacts ./artifacts
+#11 DONE 0.4s
+
+#12 [8/9] COPY tests ./tests
+#12 DONE 0.1s
+
+#13 [9/9] RUN useradd --create-home --uid 10001 analyzer     && chown -R analyzer:analyzer /srv/analyzer
+#13 DONE 0.4s
+
+#14 exporting to image
+#14 exporting layers
+#14 exporting layers 60.2s done
+#14 exporting manifest sha256:a66d59567525e60b5291179fa1525134cbb62a84d5f5e10debd2feee3ca64488 0.0s done
+#14 exporting config sha256:d40d110daf8326cc22f019e70308fa552da8718b5ec05c6db02d0eed4eeb9936 0.0s done
+#14 exporting attestation manifest sha256:0539be9d7b7b54732f955792572e673886d23183517cddf0538976eea11276a8 0.0s done
+#14 exporting manifest list sha256:a9344eceb68df28e4ab2e4ca1b554ccb0a657e670ccec524458de498f3d763f1 0.0s done
+#14 naming to docker.io/library/val-comp-analyzer-api:latest
+#14 naming to docker.io/library/val-comp-analyzer-api:latest done
+#14 unpacking to docker.io/library/val-comp-analyzer-api:latest
+#14 unpacking to docker.io/library/val-comp-analyzer-api:latest 41.8s done
+#14 DONE 102.1s

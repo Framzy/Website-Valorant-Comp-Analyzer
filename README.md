@@ -1,299 +1,148 @@
-# Valorant Predictor
+# Val Comp Analyzer — Next.js rewrite
 
-A web application for analyzing historical Valorant agent compositions and estimating team composition performance using machine learning.
+Full-stack rewrite of the legacy Flask + Vite app. Two modes:
 
-## 1. Overview
+- **Casual** (`/`) — historical composition analysis: pick map, year and 5 agents; get win rate,
+  pick rate, role pattern, playstyle and up to 3 historical recommendations.
+- **Pro Team** (`/pro`) — win-rate prediction for a team + map + year + 5-agent lineup, with
+  confidence evidence, pattern adjustment and the team's most-used historical composition.
 
-### General
-
-![Home Page](docs/screenshots/general.webp)
-
-![Products Page](docs/screenshots/general_output.webp)
-
-### Pro Team
-
-![Home Page](docs/screenshots/pro.webp)
-
-![Products Page](docs/screenshots/pro_output.webp)
-
-Valorant Predictor provides two main features:
-
-- **General Analysis** — analyzes historical composition performance, pick rate, playstyle, and composition recommendations based on map, year, and five selected agents.
-- **Team Prediction** — estimates composition win rate for a selected team, map, year, and five-agent lineup using an XGBoost regression model.
-
-General Analysis uses historical data analysis and rule-based classification rather than machine learning prediction. Team Prediction uses a trained ML model to estimate win rate.
-
-## 2. Features
-
-### General Analysis
-
-- Analyze an agent composition based on map and year.
-- View historical win rate and pick rate.
-- Identify composition role patterns and playstyles.
-- Explore recommendations based on historical composition data.
-- Handle unavailable historical compositions through the backend's fallback behavior.
-
-### Team Prediction
-
-- Select a team, map, year, and five agents.
-- Estimate composition win rate using an XGBoost Regressor.
-- Process composition features through a dedicated feature engineering and inference pipeline.
-- Return prediction details and supporting composition information through the API.
-
-## 3. Tech Stack
-
-| Component                     | Technology                   |
-| ----------------------------- | ---------------------------- |
-| Frontend                      | HTML, CSS, JavaScript        |
-| Frontend tooling              | Vite                         |
-| HTTP requests                 | Axios                        |
-| Additional frontend utilities | jQuery                       |
-| Backend                       | Python, Flask                |
-| API integration               | REST API, JSON               |
-| Data processing               | NumPy, pandas                |
-| Machine learning              | XGBoost, scikit-learn, SciPy |
-| Model serialization           | joblib                       |
-| Testing                       | Python `unittest`            |
-| Deployment server             | Gunicorn                     |
-
-## 4. Project Structure
+## Architecture
 
 ```text
-Valorant-Predictor/
-├── production/
-│   ├── backend/
-│   │   ├── app.py
-│   │   ├── config.py
-│   │   ├── constants.py
-│   │   ├── routes/
-│   │   ├── controllers/
-│   │   ├── services/
-│   │   ├── ml/
-│   │   │   ├── artifacts/
-│   │   │   └── team/
-│   │   ├── data/
-│   │   └── tests/
-│   └── frontend/
-│
-├── training/
-│   ├── dataset/
-│   ├── general/
-│   │   ├── analysis/
-│   │   ├── preprocessing/
-│   │   └── service/
-│   ├── models/
-│   │   └── team_prediction_v2/
-│   ├── team/
-│   │   ├── analysis/
-│   │   ├── preprocessing/
-│   │   ├── service/
-│   │   └── train_team_v2.py
-│   └── requirements.txt
-│
-├── .gitignore
-└── README.md
+Browser
+  |  (same origin, no CORS)
+  v
+Next.js 16 App Router (this folder)
+  |-- /            Casual page (client analyzer + static shell)
+  |-- /pro         Pro Team page
+  |-- /api/options/{years,maps,teams}   -> SQLite (Drizzle)   <- seeded from CSVs
+  |-- /api/general/analyze  ---\
+  |-- /api/team/predict     ----+------> FastAPI analyzer (analyzer/)
+                                         |-- legacy pandas analysis + XGBoost model
+                                         |-- CSVs + joblib artifacts baked in the image
 ```
 
-The tree above presents the main directories; individual files and subdirectories may be omitted for readability.
+- **SQLite is a read-only projection** of the two CSVs (`data/*.csv`). Options endpoints are SQL
+  queries; analysis is done by the Python service, which owns the model/feature contract.
+- The browser never calls Python directly. Next route handlers validate the body, forward it,
+  and map upstream errors to the legacy `{"error": "..."}` shape.
+- All legacy endpoint paths and JSON response shapes are preserved.
 
-### Architecture
+## Requirements
 
-The application separates the frontend, API layer, business logic, and ML inference pipeline.
+- **bun** 1.4+ (package manager, also runs the TypeScript seed script)
+- **Node.js** 22+ (26.x tested) for Next.js
+- **Docker** (recommended) or Python 3.11 for the analyzer service. Python 3.14
+  is not supported by the pinned ML dependencies.
+
+## Getting started
+
+```bash
+bun install
+
+# 1. seed the local SQLite database from data/*.csv
+bun run db:seed
+
+# 2. install the analyzer dependencies for local Python development
+#    (skip this step when using Docker)
+python -m pip install -r analyzer/requirements.txt
+
+# 3. start the web app and Python analyzer together
+cp .env.example .env.local   # optional; defaults are fine for local dev
+bun run dev
+```
+
+Open http://localhost:3000.
+
+`bun run dev` starts both services concurrently:
+
+- Next.js frontend at http://localhost:3000
+- FastAPI analyzer at http://127.0.0.1:8000
+
+The individual services can also be started with `bun run dev:frontend` and
+`bun run dev:backend`. On Windows, `bun run dev:backend` automatically uses a
+local Python installation when all analyzer dependencies are available;
+otherwise it builds and runs the Python 3.11 Docker image. Docker remains
+available for running the analyzer in a production-like environment:
+
+```bash
+docker build -t val-comp-analyzer-api ./analyzer
+docker run --rm -p 8000:8000 val-comp-analyzer-api
+```
+
+Environment variables (`.env.local`):
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `ANALYZER_URL` | `http://127.0.0.1:8000` | FastAPI base URL |
+| `ANALYZER_TOKEN` | empty | Optional bearer token shared with the service |
+| `DATABASE_PATH` | `./data/app.db` | SQLite file used by the options endpoints |
+
+### Verifying without the analyzer
+
+The options endpoints and the whole UI shell work with only the seeded DB:
+
+```bash
+bun run dev
+curl http://localhost:3000/api/options/years
+curl "http://localhost:3000/api/options/maps?year=2024"
+curl "http://localhost:3000/api/team/options/teams?year=2024&map=Abyss"
+```
+
+The two `POST` analysis endpoints return `502` with a readable message while the analyzer is down.
+
+Data-layer + options contract checks: `bun run smoke` (expects `data/app.db` from `bun run db:seed`).
+
+## API
+
+| Method | Path | Source |
+| --- | --- | --- |
+| GET | `/api/options/years` | SQLite |
+| GET | `/api/options/maps?year=` | SQLite |
+| GET | `/api/team/options/teams?year=&map=` | SQLite |
+| POST | `/api/general/analyze` | FastAPI `/v1/general/analyze` |
+| POST | `/api/team/predict` | FastAPI `/v1/team/predict` |
+
+Validation messages are preserved from the Flask controllers (e.g. "Request body must be a JSON object.", "Missing required fields: agents").
+
+## Project layout
 
 ```text
-User
-  |
-  v
-Frontend (Vite)
-  |
-  | HTTP / JSON
-  v
-Flask API
-  |
-  v
-Routes
-  |
-  v
-Controllers
-  |
-  v
-Services
-  |
-  +--------------------+
-  |                    |
-  v                    v
-General Analysis   Team Prediction
-  |                    |
-  v                    v
-Historical Data    ML Inference Pipeline
-                       |
-                       v
-                 Trained Artifacts
-  |
-  v
-JSON Response
-  |
-  v
-Frontend UI
+app/                      pages, layout, route handlers
+components/
+  analyzer.tsx            client orchestrator (selection state, fetch, results)
+  agent-picker/           role filter, agent grid, counter
+  inputs/                 year/map/team selects, action buttons, selection summary
+  results/general/        Casual result panels
+  results/team/           Pro Team result panels (gauge, confidence, historical)
+  results/shared/         stat cards, playstyle badge, role pattern, agent thumbs
+  ui/                     small Tailwind primitives (button, card, badge, select...)
+lib/
+  catalog/                single agent catalog (29 agents) + playstyle map
+  db/                     Drizzle schema, client, queries, DDL
+  api/                    browser client, server analyzer client
+  types.ts                API response contract
+data/                     source CSVs + generated app.db
+scripts/seed.ts           CSV -> SQLite
+analyzer/                 FastAPI service (Python 3.11, Docker)
 ```
 
-The backend uses a lightweight MVC-inspired separation of responsibilities:
+## Data updates
 
-- **Routes** map URLs and HTTP methods to controllers.
-- **Controllers** handle HTTP requests, validate incoming data, and return JSON responses.
-- **Services** implement application and business logic.
-- **ML modules** handle feature processing and inference for Team Prediction.
-- **ML artifacts** contain the trained model and supporting files required for inference.
+`data/*.csv` are the source of truth (mirrored from `production/backend/data/`). To refresh:
 
-No separate MVC Model layer or application database is required by the current backend design.
+1. copy the new CSVs into `data/` (and `analyzer/data/`),
+2. `bun run db:seed`,
+3. rebuild the analyzer image.
 
-### Training and Production
+The seed script recomputes the derived columns (win rate, pick rate, role pattern, playstyle) and writes `dataset_meta`.
 
-The `training/` directory contains development workflows for dataset preprocessing, analysis, feature engineering, model training, evaluation, and validation.
+## Notes / known divergences
 
-The `production/` directory contains the frontend and backend used to run the application.
-
-Training artifacts are made available to the production backend for inference. The backend should not depend on the training directory at runtime.
-
-## 5. API Overview
-
-The Flask backend exposes the following endpoints:
-
-| Method | Endpoint                                        | Description                                  |
-| ------ | ----------------------------------------------- | -------------------------------------------- |
-| `GET`  | `/api/options/years`                            | Retrieve available years.                    |
-| `GET`  | `/api/options/maps?year={year}`                 | Retrieve available maps for a year.          |
-| `GET`  | `/api/team/options/teams?year={year}&map={map}` | Retrieve available teams for a year and map. |
-| `POST` | `/api/general/analyze`                          | Analyze a historical agent composition.      |
-| `POST` | `/api/team/predict`                             | Predict composition performance for a team.  |
-
-The API uses JSON for request and response data.
-
-### General Analysis Request
-
-`POST /api/general/analyze`
-
-```json
-{
-  "map": "Ascent",
-  "year": 2024,
-  "agents": ["jett", "kayo", "killjoy", "omen", "sova"]
-}
-```
-
-### Team Prediction Request
-
-`POST /api/team/predict`
-
-```json
-{
-  "team": "G2 Esports",
-  "map": "Ascent",
-  "year": 2024,
-  "agents": ["jett", "kayo", "killjoy", "omen", "sova"]
-}
-```
-
-Response fields and prediction details are determined by the backend API contract.
-
-## 6. Getting Started
-
-### Requirements
-
-- Python 3.11 recommended for the current environment.
-- Node.js and npm.
-- The project dependencies listed in the relevant `requirements.txt` files.
-- Git, if cloning the repository.
-
-### Backend Setup
-
-Open a terminal at the repository root.
-
-Create and activate a virtual environment:
-
-```powershell
-cd production
-
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-```
-
-Install backend dependencies. Adjust the requirements file path if it is stored elsewhere in the backend directory:
-
-```powershell
-python -m pip install -r backend/requirements.txt
-```
-
-Start the Flask application from the `production/` directory:
-
-```powershell
-python -m backend.app
-```
-
-The application will use Flask's development server. Check the terminal for the local address and port.
-
-### Frontend Setup
-
-Open another terminal:
-
-```powershell
-cd production/frontend
-npm install
-npm run dev
-```
-
-Open the local URL printed by Vite.
-
-Ensure that the frontend's API configuration points to the running Flask backend. Configure CORS and the API base URL as needed for local development.
-
-### Training Environment
-
-The training environment has its own dependency file:
-
-```powershell
-cd training
-
-python -m venv venv
-.\venv\Scripts\Activate.ps1
-
-python -m pip install -r requirements.txt
-```
-
-Run the appropriate preprocessing, analysis, training, or validation script from the training workflow. Consult the script's arguments and existing project documentation before executing it.
-
-Training is not required merely to run production if the required datasets and trained artifacts are already available.
-
-## 7. Testing
-
-The backend API tests use Python's built-in `unittest` framework.
-
-From the `production/` directory, with the virtual environment activated:
-
-```powershell
-python -m unittest backend.tests.test_api -v
-```
-
-The current API test suite contains 13 tests covering successful requests, input validation, error handling, unknown endpoints, and unsupported HTTP methods.
-
-These tests mock service methods and therefore primarily verify the API layer and its response behavior. They do not replace end-to-end testing of the actual ML inference pipeline.
-
-## 8. Machine Learning Workflow
-
-The Team Prediction workflow includes:
-
-1. Preparing and preprocessing the team dataset.
-2. Engineering features for team and agent compositions.
-3. Training the XGBoost regression model.
-4. Evaluating model behavior and prediction stability.
-5. Saving the model and supporting artifacts.
-6. Synchronizing the required artifacts to production.
-7. Loading the artifacts for API inference.
-
-The trained model uses 116 input features according to the current model contract.
-
-General Analysis follows a separate data-processing and historical-analysis workflow; it should not be described as ML prediction.
-
-## 9. Demo & Links
-
-- **Live Demo:** [Website Valorant Comp Analyzer](https://framzy-valorant-comp-analyzer.vercel.app/)
-- **Repository:** [Repository Github Valorant Comp Analyzer](https://github.com/Framzy/Website-Valorant-Comp-Analysis)
+- `cacheComponents` (Partial Prerendering) is enabled by the scaffold; the pages are static shells
+  and all dynamic data is fetched from route handlers, so no Suspense boundaries are required.
+- `tests/api.http` in the legacy app is stale and was not used as a contract.
+- The legacy UI catalog (28 agents) omitted **veto**; the API/model accepts it, so the catalog here has
+  29 agents (veto's portrait is served locally from `public/agents/veto.png`).
+- Unknown API paths / wrong methods keep the legacy behaviour (HTML 404 / empty 405); the five real endpoints always return JSON. See `docs/PARITY.md`.
